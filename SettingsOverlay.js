@@ -1,16 +1,12 @@
 export function SettingsOverlay(props) {
-   const sliderLabel = document.createElement('label')
-   sliderLabel.textContent = 'Ambient Light'
+   const ambientLightSliderLabel = document.createElement('label')
+   ambientLightSliderLabel.textContent = 'Ambient Light'
 
-   const slider = document.createElement('input')
-   slider.type = 'range'
-   slider.value = props.ambientLightIntensity
-   slider.min = 0
-   slider.max = 5
-   slider.step = 0.1
-   slider.oninput = () => self.onAmbientLightIntensityChange(slider.value)
+   const ambientLightSlider = Slider(0, 5, 0.1)
+   ambientLightSlider.value = props.ambientLightIntensity
+   ambientLightSlider.oninput = () => self.onAmbientLightIntensityChange(ambientLightSlider.value)
 
-   slider.id = sliderLabel.htmlFor = 'ambient-light-slider'
+   ambientLightSlider.id = ambientLightSliderLabel.htmlFor = 'ambient-light-slider'
 
    const root = document.createElement('div')
    root.style.display = 'flex'
@@ -24,8 +20,8 @@ export function SettingsOverlay(props) {
    root.style.backgroundColor = 'rgb(0 255 0 / 25%)'
 
    root.append(
-      sliderLabel,
-      slider
+      ambientLightSliderLabel,
+      ambientLightSlider
    )
 
    const self = {
@@ -34,4 +30,13 @@ export function SettingsOverlay(props) {
    }
 
    return self
+}
+
+function Slider(min, max, step) {
+   const slider = document.createElement('input')
+   slider.type = 'range'
+   slider.min = min
+   slider.max = max
+   slider.step = step
+   return slider
 }
