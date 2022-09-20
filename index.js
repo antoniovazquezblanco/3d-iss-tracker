@@ -7,16 +7,21 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 // Create an scene
 const scene = new THREE.Scene()
 
-// Ambiemt light
+// Ambient light
 const ambient_light = new THREE.AmbientLight(0xFFFFFF, 1)
 ambient_light.name = 'ambient_light'
 ambient_light.intensity = 1
 scene.add(ambient_light)
 
+const axesHelper = new THREE.AxesHelper(1_000)
+scene.add(axesHelper)
+
 // Create a camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000)
 camera.position.z = 1000
 // scene.add(camera)
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement)
 
 // Load a glTF resource
 const loader = new THREE.GLTFLoader()
@@ -53,14 +58,23 @@ loader.load(
 
             scene.add(model_scene)
 
-            console.log(gltf.animations) // Array<THREE.AnimationClip>
-            console.log(gltf.scene) // THREE.Group
-            console.log(gltf.scenes) // Array<THREE.Group>
-            console.log(gltf.cameras) // Array<THREE.Camera>
-            console.log(gltf.asset) // Object
+            // console.log(gltf.animations) // Array<THREE.AnimationClip>
+            // console.log(gltf.scene) // THREE.Group
+            // console.log(gltf.scenes) // Array<THREE.Group>
+            // console.log(gltf.cameras) // Array<THREE.Camera>
+            // console.log(gltf.asset) // Object
+
+            const settingsOverlay = SettingsOverlay({ ambientLightIntensity: ambient_light.intensity })
+            settingsOverlay.onAmbientLightIntensityChange = v => ambient_light.intensity = v
+
+            document.body.style.margin = '0'
+            document.body.style.fontFamily = 'sans-serif'
+            document.body.append(settingsOverlay.root, renderer.domElement)
     },
     // called while loading is progressing
-    xhr => console.log((xhr.loaded / xhr.total * 100) + '% loaded'),
+    xhr => {
+        // console.log((xhr.loaded / xhr.total * 100) + '% loaded')
+    },
     // called when loading has errors
     error => console.log('An error happened', error)
 )
@@ -69,13 +83,6 @@ loader.load(
 // light2.position.set(0.5, 0, 0.866) // ~60º
 // light2.name = 'main_light'
 // camera.add(light2)
-
-const settingsOverlay = SettingsOverlay({ ambientLightIntensity: ambient_light.intensity })
-settingsOverlay.onAmbientLightIntensityChange = v => ambient_light.intensity = v
-
-document.body.style.margin = '0'
-document.body.style.fontFamily = 'sans-serif'
-document.body.append(settingsOverlay.root, renderer.domElement)
 
 // Animate the scene
 function animate() {
