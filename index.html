@@ -17,6 +17,38 @@
     <script src="node_modules/three/build/three.min.js"></script>
     <script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
     <script>
+        const initialAmbientLightIntensity = 1
+
+        const sliderLabel = document.createElement('label')
+        sliderLabel.textContent = 'Ambient Light'
+
+        const slider = document.createElement('input')
+        slider.type = 'range'
+        slider.value = '' + initialAmbientLightIntensity
+        slider.min = 0
+        slider.max = 5
+        slider.step = 0.1
+        slider.oninput = () => {
+            ambient_light.intensity = slider.value
+        }
+
+        slider.id = sliderLabel.htmlFor = 'ambient-light-slider'
+
+        const overlay = document.createElement('div')
+        overlay.style.display = 'flex'
+        overlay.style.flexDirection = 'column'
+        overlay.style.position = 'fixed'
+        overlay.style.top = '8px'
+        overlay.style.right = '8px'
+        overlay.style.padding = '8px'
+        overlay.style.borderRadius = '4px'
+        overlay.style.color = '#fff'
+        overlay.style.backgroundColor = 'rgb(0 255 0 / 25%)'
+        overlay.append(sliderLabel, slider)
+
+        document.body.style.fontFamily = 'sans-serif'
+        document.body.append(overlay)
+
         // Create a renderer and corresponding DOM element
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -31,7 +63,7 @@
         scene.add(ambient_light);
 
         // TODO: UI
-        ambient_light.intensity = 1;
+        ambient_light.intensity = initialAmbientLightIntensity;
 
         // Create a camera
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
@@ -88,12 +120,12 @@
             },
             // called when loading has errors
             function (error) {
-                console.log('An error happened');
+                console.log('An error happened', error);
             }
         );
 
 
-        
+
 
         //const light2 = new THREE.DirectionalLight(0xFFFFFF, 0.8 * Math.PI);
         //light2.position.set(0.5, 0, 0.866); // ~60º
