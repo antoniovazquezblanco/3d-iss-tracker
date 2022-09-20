@@ -25,6 +25,14 @@
         // Create an scene
         const scene = new THREE.Scene();
 
+        // Ambiemt light
+        const ambient_light = new THREE.AmbientLight(0xFFFFFF, 1);
+        ambient_light.name = 'ambient_light';
+        scene.add(ambient_light);
+
+        // TODO: UI
+        ambient_light.intensity = 1;
+
         // Create a camera
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
         camera.position.z = 1000;
@@ -84,18 +92,13 @@
             }
         );
 
-        const hemiLight = new THREE.HemisphereLight();
-        hemiLight.name = 'hemi_light';
-        scene.add(hemiLight);
 
-        const light1 = new THREE.AmbientLight(0xFFFFFF, 0.3);
-        light1.name = 'ambient_light';
-        camera.add(light1);
+        
 
-        const light2 = new THREE.DirectionalLight(0xFFFFFF, 0.8 * Math.PI);
-        light2.position.set(0.5, 0, 0.866); // ~60º
-        light2.name = 'main_light';
-        camera.add(light2);
+        //const light2 = new THREE.DirectionalLight(0xFFFFFF, 0.8 * Math.PI);
+        //light2.position.set(0.5, 0, 0.866); // ~60º
+        //light2.name = 'main_light';
+        //camera.add(light2);
 
         // Animate the scene
         function animate() {
