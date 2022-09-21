@@ -1,12 +1,19 @@
 export function SettingsOverlay(props) {
-   const ambientLightSliderLabel = document.createElement('label')
-   ambientLightSliderLabel.textContent = 'Ambient Light'
+   const ambientLightSliderLabel = Label('Ambient Light')
 
    const ambientLightSlider = Slider(0, 5, 0.1)
    ambientLightSlider.value = props.ambientLightIntensity
    ambientLightSlider.oninput = () => self.onAmbientLightIntensityChange(ambientLightSlider.value)
 
    ambientLightSlider.id = ambientLightSliderLabel.htmlFor = 'ambient-light-slider'
+
+   const timeShiftSliderLabel = Label('Time shift')
+
+   const timeShiftSlider = Slider(-12, 12, 0.1)
+   timeShiftSlider.value = props.timeShift
+   timeShiftSlider.oninput = () => self.onTimeShiftChange(timeShiftSlider.value)
+
+   timeShiftSlider.id = timeShiftSliderLabel.htmlFor = 'time-shift-slider'
 
    const root = document.createElement('div')
    root.style.display = 'flex'
@@ -21,15 +28,24 @@ export function SettingsOverlay(props) {
 
    root.append(
       ambientLightSliderLabel,
-      ambientLightSlider
+      ambientLightSlider,
+      timeShiftSliderLabel,
+      timeShiftSlider
    )
 
    const self = {
       root,
-      onAmbientLightIntensityChange: () => {}
+      onAmbientLightIntensityChange: () => {},
+      onTimeShiftChange: () => {}
    }
 
    return self
+}
+
+function Label(text) {
+   const label = document.createElement('label')
+   label.textContent = text
+   return label
 }
 
 function Slider(min, max, step) {
