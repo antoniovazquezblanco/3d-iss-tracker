@@ -1,19 +1,24 @@
-export function SettingsOverlay(props) {
+import { toInt } from './utils'
+
+interface SettingsOverlayProps {
+   ambientLightIntensity: number
+   onAmbientLightIntensityChange: (v: number) => {}
+   timeShift: number
+   onTimeShiftChange: (v: number) => {}
+}
+
+export function SettingsOverlay(props: SettingsOverlayProps) {
    const ambientLightSliderLabel = Label('Ambient Light')
 
    const ambientLightSlider = Slider(0, 5, 0.1)
-   ambientLightSlider.value = props.ambientLightIntensity
-   ambientLightSlider.oninput = () => self.onAmbientLightIntensityChange(ambientLightSlider.value)
-
-   ambientLightSlider.id = ambientLightSliderLabel.htmlFor = 'ambient-light-slider'
+   ambientLightSlider.value = '' + props.ambientLightIntensity
+   ambientLightSlider.oninput = () => props.onAmbientLightIntensityChange(toInt(ambientLightSlider.value))
 
    const timeShiftSliderLabel = Label('Time shift')
 
    const timeShiftSlider = Slider(-12, 12, 0.1)
-   timeShiftSlider.value = props.timeShift
-   timeShiftSlider.oninput = () => self.onTimeShiftChange(timeShiftSlider.value)
-
-   timeShiftSlider.id = timeShiftSliderLabel.htmlFor = 'time-shift-slider'
+   timeShiftSlider.value = '' + props.timeShift
+   timeShiftSlider.oninput = () => props.onTimeShiftChange(toInt(timeShiftSlider.value))
 
    const root = document.createElement('div')
    root.style.display = 'flex'
@@ -23,6 +28,7 @@ export function SettingsOverlay(props) {
    root.style.right = '8px'
    root.style.padding = '8px'
    root.style.borderRadius = '4px'
+   root.style.fontSize = '15px'
    root.style.color = '#fff'
    root.style.backgroundColor = 'rgb(0 255 0 / 25%)'
 
@@ -33,26 +39,20 @@ export function SettingsOverlay(props) {
       timeShiftSlider
    )
 
-   const self = {
-      root,
-      onAmbientLightIntensityChange: () => {},
-      onTimeShiftChange: () => {}
-   }
-
-   return self
+   return root
 }
 
-function Label(text) {
+function Label(text: string) {
    const label = document.createElement('label')
    label.textContent = text
    return label
 }
 
-function Slider(min, max, step) {
+function Slider(min: number, max: number, step: number) {
    const slider = document.createElement('input')
    slider.type = 'range'
-   slider.min = min
-   slider.max = max
-   slider.step = step
+   slider.min = '' + min
+   slider.max = '' + max
+   slider.step = '' + step
    return slider
 }
