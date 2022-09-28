@@ -3,7 +3,8 @@
     "start": "webpack serve"
   },
   "dependencies": {
-    "three": "0.144.0"
+    "three": "0.144.0",
+    "tle.js": "^4.7.2"
   },
   "devDependencies": {
     "@types/node": "18.7.23",
