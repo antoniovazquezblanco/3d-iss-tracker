@@ -12,6 +12,7 @@ const SUN_AT_NULL_ISLAND = new THREE.Vector3(0, 0, -5_000)
 
 const EARTH_DIAMETER_POLES_KM = 12_714
 const EARTH_DIAMETER_EQUATOR_KM = 12_756
+const ISS_AVG_ALTITUDE_KM = 420
 
 const MS_IN_HOUR = 60 * 60 * 1_000
 const MS_IN_DAY = 24 * MS_IN_HOUR
@@ -45,7 +46,7 @@ camera.position.z = EARTH_DIAMETER_EQUATOR_KM
 camera.lookAt(ORIGIN)
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
-orbitControls.minDistance = EARTH_DIAMETER_EQUATOR_KM
+orbitControls.minDistance = EARTH_DIAMETER_EQUATOR_KM / 1.5
 orbitControls.maxDistance = EARTH_DIAMETER_EQUATOR_KM * 3
 
 new GLTFLoader().load('models/Earth_1_12756.glb', gltf => {
@@ -110,8 +111,8 @@ Promise.resolve(`ISS (ZARYA)
          console.debug('getSatelliteInfo(tle)', getSatelliteInfo(tle, Date.now()))
 
          new FBXLoader().load('models/ISSComplete1.fbx', object => {
-            object.position.z = 1100
-            object.scale.set(10, 10, 10)
+            object.position.z = EARTH_DIAMETER_EQUATOR_KM / 2 + ISS_AVG_ALTITUDE_KM
+            object.scale.set(200, 200, 200)
             scene.add(object)
          }, noop, console.error)
       })
