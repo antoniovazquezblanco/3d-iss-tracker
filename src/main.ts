@@ -1,6 +1,6 @@
 import {
-   AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, Line, LineBasicMaterial, LineDashedMaterial,
-   MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer
+   AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, GridHelper, Line, LineBasicMaterial,
+   LineDashedMaterial, MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { SettingsOverlay } from './SettingsOverlay'
@@ -21,9 +21,13 @@ scene.add(ambientLight)
 const sunLight = new DirectionalLight(0xFFCC99, 10)
 scene.add(sunLight)
 
-const axesHelper = new AxesHelper(EARTH_DIAMETER_EQUATOR_KM)
-axesHelper.visible = false
-scene.add(axesHelper)
+const axes = new AxesHelper(EARTH_DIAMETER_EQUATOR_KM)
+axes.visible = false
+scene.add(axes)
+
+const grid = new GridHelper(20_000, 20)
+grid.visible = false
+scene.add(grid)
 
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, Number.MAX_SAFE_INTEGER)
 camera.position.x = EARTH_DIAMETER_EQUATOR_KM
@@ -87,7 +91,7 @@ const issFutureOrbitGeometry = new BufferGeometry()
 const issFutureOrbitLine = new Line(issFutureOrbitGeometry, issFutureOrbitMaterial)
 scene.add(issFutureOrbitLine)
 
-const issPastOrbitMaterial = new LineDashedMaterial({ color: 0xff00ff, gapSize: 750, dashSize: 750 })
+const issPastOrbitMaterial = new LineDashedMaterial({ color: 0xff00ff, gapSize: 500, dashSize: 500 })
 const issPastOrbitGeometry = new BufferGeometry()
 const issPastOrbitLine = new Line(issPastOrbitGeometry, issPastOrbitMaterial)
 scene.add(issPastOrbitLine)
@@ -130,8 +134,8 @@ const settingsOverlay = SettingsOverlay({
    onAmbientLightIntensityChange: v => ambientLight.intensity = v,
    timeShift,
    onTimeShiftChange: v => timeShift = v,
-   axesVisible: axesHelper.visible,
-   onAxesVisibleChange: v => axesHelper.visible = v,
+   axesVisible: axes.visible,
+   onAxesVisibleChange: v => axes.visible = grid.visible = v,
    futureOrbit,
    onFutureOrbitChange: v => futureOrbit = v,
    pastOrbit,
