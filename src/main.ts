@@ -43,7 +43,7 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 
 const scene = new Scene()
 
-const ambientLight = new AmbientLight(0xFFFFFF, 1.11)
+const ambientLight = new AmbientLight(0xFFFFFF, 0.5)
 scene.add(ambientLight)
 
 const sunLight = new DirectionalLight(0xFFCC99, 10)
