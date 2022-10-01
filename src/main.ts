@@ -10,7 +10,7 @@ import {
    LineDashedMaterial,
    MathUtils,
    Mesh,
-   MeshBasicMaterial,
+   MeshStandardMaterial,
    Object3D,
    PerspectiveCamera,
    Scene,
@@ -87,7 +87,7 @@ function positionSunLight() {
 }
 
 const tempEarthGeometry = new SphereGeometry(EARTH_RADIUS_AVG_KM, 32, 32)
-const tempEarthMaterial = new MeshBasicMaterial({ color: 0x000011 })
+const tempEarthMaterial = new MeshStandardMaterial({ color: 0x000007 })
 const tempEarthSphere = new Mesh(tempEarthGeometry, tempEarthMaterial)
 scene.add(tempEarthSphere)
 
