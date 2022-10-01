@@ -1,10 +1,10 @@
 import { AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, Line, LineBasicMaterial, LineDashedMaterial, MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { SettingsOverlay } from './SettingsOverlay'
-import { EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, noop, ORIGIN, rotateAroundPoint, ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel, MS_IN_HOUR } from './utils'
+import { EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, ORIGIN, rotateAroundPoint, ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel, MS_IN_HOUR } from './utils'
 import { getLatLngObj } from 'tle.js'
 
-const renderer = new WebGLRenderer({ antialias: true })
+const renderer = new WebGLRenderer({ antialias: true, alpha: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 const scene = new Scene()
@@ -141,7 +141,7 @@ timeDisplay.style.textShadow = '0 0 5px rgb(255 255 255 / 50%)'
 
 document.body.style.margin = '0'
 document.body.style.fontFamily = 'sans-serif'
-document.body.style.backgroundColor = '#000'
+document.body.style.backgroundImage = 'radial-gradient(#030d2b, #00060d)'
 document.body.style.accentColor = '#343d46'
 document.body.append(settingsOverlay, timeDisplay, renderer.domElement)
 
