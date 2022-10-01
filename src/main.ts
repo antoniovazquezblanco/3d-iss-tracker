@@ -3,13 +3,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { SettingsOverlay } from './SettingsOverlay'
-import { degToRad, noop } from './utils'
-import { getLatLngObj, getSatelliteInfo } from 'tle.js'
+import { noop } from './utils'
+import { getLatLngObj } from 'tle.js'
+
+const { degToRad } = THREE.MathUtils
 
 const ORIGIN = new THREE.Vector3(0, 0, 0)
 const Y_AXIS = new THREE.Vector3(0, 1, 0)
 const SUN_AT_NULL_ISLAND = new THREE.Vector3(0, 0, -5_000)
 
+// TODO: Adjust based on https://en.m.wikipedia.org/wiki/World_Geodetic_System.
 const EARTH_DIAMETER_POLES_KM = 12_714
 const EARTH_DIAMETER_EQUATOR_KM = 12_756
 const ISS_AVG_ALTITUDE_KM = 420
@@ -17,6 +20,19 @@ const ISS_AVG_ALTITUDE_KM = 420
 const MS_IN_HOUR = 60 * 60 * 1_000
 const MS_IN_DAY = 24 * MS_IN_HOUR
 const ROTATION_PER_MS_DEG = 360 / MS_IN_DAY
+
+// TODO: Adjust based on WGS 84.
+function latLngToVector3(lat: number, lng: number) {
+   const phi = degToRad(90 - lat)
+   const theta = degToRad(lng + 180)
+   const radius = 6_371 + ISS_AVG_ALTITUDE_KM / 2
+
+   return new THREE.Vector3(
+      -radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+   )
+}
 
 function rotateAroundPoint(obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, rotationRad: number) {
    obj.position.sub(point)
@@ -103,15 +119,13 @@ document.body.append(settingsOverlay, renderer.domElement)
 
 // fetch('https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE')
 Promise.resolve(`ISS (ZARYA)
-1 25544U 98067A   22271.29875188  .00011405  00000+0  20504-3 0  9996
-2 25544  51.6445 185.7292 0002377 302.6655 202.5977 15.50344723361171`)
+1 25544U 98067A   22273.72802950  .00014755  00000+0  26205-3 0  9998
+2 25544  51.6446 173.6890 0002611 316.4566  76.5686 15.50428186361551`)
    .then(
       tle => {
-         console.debug('getLatLngObj(tle)', getLatLngObj(tle))
-         console.debug('getSatelliteInfo(tle)', getSatelliteInfo(tle, Date.now()))
-
          new FBXLoader().load('models/ISSComplete1.fbx', object => {
-            object.position.z = EARTH_DIAMETER_EQUATOR_KM / 2 + ISS_AVG_ALTITUDE_KM
+            const { lat, lng } = getLatLngObj(tle)
+            object.position.copy(latLngToVector3(lat, lng))
             object.scale.set(200, 200, 200)
             scene.add(object)
          }, noop, console.error)

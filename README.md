@@ -13,6 +13,7 @@ npm start
 - [ ] Render ISS in current position
 - [ ] Render ISS predicted orbit
 - [ ] Correct sun position (currently based on UTC time alone)
+- [ ] Correct ISS position (currently assuming Earth is a perfect sphere)
 - [ ] Add starry background
 
 ---
