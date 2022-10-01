@@ -1,7 +1,13 @@
-import { AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, Line, LineBasicMaterial, LineDashedMaterial, MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import {
+   AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, Line, LineBasicMaterial, LineDashedMaterial,
+   MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer
+} from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { SettingsOverlay } from './SettingsOverlay'
-import { EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, ORIGIN, rotateAroundPoint, ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel, MS_IN_HOUR } from './utils'
+import {
+   EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, ORIGIN, rotateAroundPoint,
+   ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel, MS_IN_HOUR
+} from './utils'
 import { getLatLngObj } from 'tle.js'
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true })

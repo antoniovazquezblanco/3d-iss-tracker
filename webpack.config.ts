@@ -1,3 +1,4 @@
+import { resolve } from 'path'
 import { Configuration } from 'webpack'
 import 'webpack-dev-server'
 
@@ -5,7 +6,10 @@ const config: Configuration = {
    mode: 'development',
    entry: './src/main.ts',
    resolve: {
-      extensions: ['.ts', '.js']
+      extensions: ['.ts', '.js'],
+      alias: {
+         three: resolve(__dirname, 'node_modules/three')
+      }
    },
    module: {
       rules: [{
