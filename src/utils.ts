@@ -10,6 +10,7 @@ export const Y_AXIS = new Vector3(0, 1, 0)
 export const NULL_ISLAND = new Vector3(0, 0, -Number.MAX_SAFE_INTEGER)
 
 // TODO: Adjust based on https://en.m.wikipedia.org/wiki/World_Geodetic_System.
+export const EARTH_RADIUS_AVG_KM = 6_371
 export const EARTH_DIAMETER_POLES_KM = 12_714
 export const EARTH_DIAMETER_EQUATOR_KM = 12_756
 export const ISS_AVG_ALTITUDE_KM = 420

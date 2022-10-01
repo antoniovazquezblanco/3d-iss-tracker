@@ -1,12 +1,40 @@
 import {
-   AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, GridHelper, Line, LineBasicMaterial,
-   LineDashedMaterial, MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer
+   AmbientLight,
+   AxesHelper,
+   Box3,
+   BufferGeometry,
+   DirectionalLight,
+   GridHelper,
+   Line,
+   LineBasicMaterial,
+   LineDashedMaterial,
+   MathUtils,
+   Mesh,
+   MeshBasicMaterial,
+   Object3D,
+   PerspectiveCamera,
+   Scene,
+   SphereGeometry,
+   Vector3,
+   WebGLRenderer
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { SettingsOverlay } from './SettingsOverlay'
 import {
-   EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, ORIGIN, rotateAroundPoint,
-   ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel, MS_IN_HOUR
+   EARTH_DIAMETER_EQUATOR_KM,
+   EARTH_RADIUS_AVG_KM,
+   getIssTle,
+   ISS_AVG_ALTITUDE_KM,
+   latLngToVector3,
+   loadFbxModel,
+   loadGltfModel,
+   MS_IN_DAY,
+   MS_IN_HOUR,
+   NULL_ISLAND,
+   ORIGIN,
+   rotateAroundPoint,
+   ROTATION_PER_MS_DEG,
+   Y_AXIS
 } from './utils'
 import { getLatLngObj } from 'tle.js'
 
@@ -58,7 +86,11 @@ function positionSunLight() {
    rotateAroundPoint(sunLight, ORIGIN, Y_AXIS, MathUtils.degToRad(rotationRad - 90))
 }
 
-// TODO: Add loading indicator, or start by rendering simple shapes and swap them out.
+const tempEarthGeometry = new SphereGeometry(EARTH_RADIUS_AVG_KM, 32, 32)
+const tempEarthMaterial = new MeshBasicMaterial({ color: 0x000011 })
+const tempEarthSphere = new Mesh(tempEarthGeometry, tempEarthMaterial)
+scene.add(tempEarthSphere)
+
 // TODO: Verify Earth has the right inclination.
 loadGltfModel('Earth_1_12756.glb').then(gltf => {
    const box = new Box3().setFromObject(gltf.scene)
@@ -70,6 +102,7 @@ loadGltfModel('Earth_1_12756.glb').then(gltf => {
    gltf.scene.scale.setScalar(EARTH_DIAMETER_EQUATOR_KM / 1_000)
    rotateAroundPoint(gltf.scene, ORIGIN, Y_AXIS, MathUtils.degToRad(-90))
 
+   scene.remove(tempEarthSphere)
    scene.add(gltf.scene)
 })
 
