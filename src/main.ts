@@ -69,10 +69,11 @@ new GLTFLoader().load('models/Earth_1_12756.glb', gltf => {
    const box = new THREE.Box3().setFromObject(gltf.scene)
    const center = box.getCenter(new THREE.Vector3)
 
-   gltf.scene.scale.setScalar(EARTH_DIAMETER_EQUATOR_KM / 1_000)
    gltf.scene.position.x += gltf.scene.position.x - center.x
    gltf.scene.position.y += gltf.scene.position.y - center.y
    gltf.scene.position.z += gltf.scene.position.z - center.z
+   gltf.scene.scale.setScalar(EARTH_DIAMETER_EQUATOR_KM / 1_000)
+   rotateAroundPoint(gltf.scene, ORIGIN, Y_AXIS, degToRad(-90))
 
    scene.add(gltf.scene)
 }, noop, console.error)
@@ -94,7 +95,7 @@ function positionSunLight() {
 
    const { x, y, z } = SUN_AT_NULL_ISLAND
    sunLight.position.set(x, y, z)
-   rotateAroundPoint(sunLight, ORIGIN, Y_AXIS, degToRad(rotationRad))
+   rotateAroundPoint(sunLight, ORIGIN, Y_AXIS, degToRad(rotationRad - 90))
 }
 
 function render() {
