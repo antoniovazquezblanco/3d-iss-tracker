@@ -133,6 +133,7 @@ const settingsOverlay = SettingsOverlay({
 })
 
 const timeDisplay = document.createElement('div')
+timeDisplay.style.userSelect = 'none'
 timeDisplay.style.position = 'fixed'
 timeDisplay.style.bottom = timeDisplay.style.left = '8px'
 timeDisplay.style.fontSize = '14px'
