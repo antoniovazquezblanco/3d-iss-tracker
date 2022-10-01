@@ -1,13 +1,21 @@
 import { Checkbox, HBox, Label, linkWithLabel, Slider, VBox } from './dom'
-import { MS_IN_HOUR } from './utils'
+import { MS_IN_DAY, MS_IN_HOUR } from './utils'
 
 interface SettingsOverlayProps {
    ambientLightIntensity: number
    onAmbientLightIntensityChange(v: number): void
+
    timeShift: number
    onTimeShiftChange(v: number): void
+
    axesVisible: boolean
    onAxesVisibleChange(v: boolean): void
+
+   futureOrbit: number
+   onFutureOrbitChange(v: number): void
+
+   pastOrbit: number
+   onPastOrbitChange(v: number): void
 }
 
 export function SettingsOverlay(props: SettingsOverlayProps) {
@@ -23,7 +31,25 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    const timeShiftSlider = Slider(-12 * MS_IN_HOUR, 12 * MS_IN_HOUR, 1)
    timeShiftSlider.value = '' + props.timeShift
    timeShiftSlider.oninput = () => props.onTimeShiftChange(parseInt(timeShiftSlider.value, 10))
+   timeShiftSlider.ondblclick = timeShiftSliderLabel.ondblclick = () => {
+      timeShiftSlider.value = '0'
+      props.onTimeShiftChange(0)
+   }
    linkWithLabel(timeShiftSlider, timeShiftSliderLabel)
+
+   const futureOrbitSliderLabel = Label('Future Orbit')
+
+   const futureOrbitSlider = Slider(0, MS_IN_DAY, 1)
+   futureOrbitSlider.value = '' + props.futureOrbit
+   futureOrbitSlider.oninput = () => props.onFutureOrbitChange(parseInt(futureOrbitSlider.value, 10))
+   linkWithLabel(futureOrbitSlider, futureOrbitSliderLabel)
+
+   const pastOrbitSliderLabel = Label('Past Orbit')
+
+   const pastOrbitSlider = Slider(0, MS_IN_DAY, 1)
+   pastOrbitSlider.value = '' + props.pastOrbit
+   pastOrbitSlider.oninput = () => props.onPastOrbitChange(parseInt(pastOrbitSlider.value, 10))
+   linkWithLabel(pastOrbitSlider, pastOrbitSliderLabel)
 
    const axesVisibleLabel = Label('Axes')
 
@@ -50,6 +76,10 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
       ambientLightSlider,
       timeShiftSliderLabel,
       timeShiftSlider,
+      futureOrbitSliderLabel,
+      futureOrbitSlider,
+      pastOrbitSliderLabel,
+      pastOrbitSlider,
       axesVisibleControl
    )
 

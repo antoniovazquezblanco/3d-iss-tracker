@@ -1,7 +1,7 @@
-import { AmbientLight, AxesHelper, Box3, DirectionalLight, MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AxesHelper, Box3, BufferGeometry, DirectionalLight, Line, LineBasicMaterial, LineDashedMaterial, MathUtils, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { SettingsOverlay } from './SettingsOverlay'
-import { EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, noop, ORIGIN, rotateAroundPoint, ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel } from './utils'
+import { EARTH_DIAMETER_EQUATOR_KM, getIssTle, ISS_AVG_ALTITUDE_KM, latLngToVector3, MS_IN_DAY, noop, ORIGIN, rotateAroundPoint, ROTATION_PER_MS_DEG, NULL_ISLAND, Y_AXIS, loadGltfModel, loadFbxModel, MS_IN_HOUR } from './utils'
 import { getLatLngObj } from 'tle.js'
 
 const renderer = new WebGLRenderer({ antialias: true })
@@ -31,6 +31,8 @@ orbitControls.maxDistance = EARTH_DIAMETER_EQUATOR_KM * 3
 
 let frameTime = Date.now()
 let timeShift = 0
+let futureOrbit = 1.5 * MS_IN_HOUR
+let pastOrbit = 0.5 * MS_IN_HOUR
 
 function positionSunLight() {
    let lastNoon = new Date().setUTCHours(12, 0, 0, 0)
@@ -73,13 +75,40 @@ loadFbxModel('ISSComplete1.fbx').then(obj => {
    issObject = obj
 })
 
+// TODO: Apply glowing and/or fading effect.
+const issFutureOrbitMaterial = new LineBasicMaterial({ color: 0xff0000 })
+const issFutureOrbitGeometry = new BufferGeometry()
+const issFutureOrbitLine = new Line(issFutureOrbitGeometry, issFutureOrbitMaterial)
+scene.add(issFutureOrbitLine)
+
+const issPastOrbitMaterial = new LineDashedMaterial({ color: 0xff00ff, gapSize: 750, dashSize: 750 })
+const issPastOrbitGeometry = new BufferGeometry()
+const issPastOrbitLine = new Line(issPastOrbitGeometry, issPastOrbitMaterial)
+scene.add(issPastOrbitLine)
+
 function positionIss() {
    if (!issObject) return
 
-   const { lat, lng } = getLatLngObj(issTle,  Date.now() + timeShift)
+   const { lat, lng } = getLatLngObj(issTle, frameTime)
    // TODO: Position at exact altitude.
    const radius = 6_371 + ISS_AVG_ALTITUDE_KM / 2
    issObject.position.copy(latLngToVector3(lat, lng, radius))
+
+   // TODO: Avoid line flickering.
+   const issFuturePoints: Vector3[] = []
+   for (let i = 1; i <= futureOrbit; i += 120_000) {
+      const { lat, lng } = getLatLngObj(issTle, frameTime + i)
+      issFuturePoints.push(latLngToVector3(lat, lng, radius))
+   }
+   issFutureOrbitGeometry.setFromPoints(issFuturePoints)
+
+   const issPastPoints: Vector3[] = []
+   for (let i = 1; i <= pastOrbit; i += 120_000) {
+      const { lat, lng } = getLatLngObj(issTle, frameTime - i)
+      issPastPoints.push(latLngToVector3(lat, lng, radius))
+   }
+   issPastOrbitGeometry.setFromPoints(issPastPoints)
+   issPastOrbitLine.computeLineDistances()
 }
 
 function refreshIssTle() {
@@ -96,17 +125,45 @@ const settingsOverlay = SettingsOverlay({
    timeShift,
    onTimeShiftChange: v => timeShift = v,
    axesVisible: axesHelper.visible,
-   onAxesVisibleChange: v => axesHelper.visible = v
+   onAxesVisibleChange: v => axesHelper.visible = v,
+   futureOrbit,
+   onFutureOrbitChange: v => futureOrbit = v,
+   pastOrbit,
+   onPastOrbitChange: v => pastOrbit = v
 })
+
+const timeDisplay = document.createElement('div')
+timeDisplay.style.position = 'fixed'
+timeDisplay.style.bottom = timeDisplay.style.left = '8px'
+timeDisplay.style.fontSize = '14px'
+timeDisplay.style.color = 'rgb(255 255 255 / 75%)'
+timeDisplay.style.textShadow = '0 0 5px rgb(255 255 255 / 50%)'
 
 document.body.style.margin = '0'
 document.body.style.fontFamily = 'sans-serif'
 document.body.style.backgroundColor = '#000'
 document.body.style.accentColor = '#343d46'
-document.body.append(settingsOverlay, renderer.domElement)
+document.body.append(settingsOverlay, timeDisplay, renderer.domElement)
+
+window.addEventListener('resize', () => {
+   const { innerWidth, innerHeight } = window
+
+   camera.aspect = innerWidth / innerHeight
+   camera.updateProjectionMatrix()
+
+   renderer.setSize(innerWidth, innerHeight)
+})
 
 function render() {
    frameTime = Date.now() + timeShift
+
+   timeDisplay.textContent = new Date(frameTime).toISOString().slice(0, -5) + 'Z'
+   timeDisplay.style.color = timeShift > 0
+      ? 'rgb(255 155 155 / 75%)'
+      : timeShift < 0
+      ? 'rgb(255 155 255 / 75%)'
+      : 'rgb(255 255 255 / 75%)'
+
    positionSunLight()
    positionIss()
    renderer.render(scene, camera)
