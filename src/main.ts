@@ -202,9 +202,9 @@ function render() {
 
    timeDisplay.textContent = new Date(frameTime).toISOString().slice(0, -5) + 'Z'
    timeDisplay.style.color = timeShift > 0
-      ? 'rgb(255 155 155 / 75%)'
+      ? 'rgb(255 100 100 / 75%)'
       : timeShift < 0
-      ? 'rgb(255 155 255 / 75%)'
+      ? 'rgb(255 100 255 / 75%)'
       : 'rgb(255 255 255 / 75%)'
 
    positionSunLight()
