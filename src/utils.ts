@@ -46,9 +46,9 @@ interface TleJson {
 }
 
 export function getIssTle() {
-   return fetch('https://tle.ivanstanojevic.me/api/tle/25544')
+   return fetch('https://tle.ivanstanojevic.me/api/tle/49044')
       .then(res => res.json())
-      .then((tle: TleJson) => `ISS (ZARYA)\n${tle.line1}\n${tle.line2}`)
+      .then((tle: TleJson) => `${tle.name}\n${tle.line1}\n${tle.line2}`)
 }
 
 const gltfLoader = new GLTFLoader

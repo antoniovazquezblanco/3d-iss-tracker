@@ -155,8 +155,7 @@ function positionIss() {
 }
 
 function refreshIssTle() {
-   // FIXME: This actually misplaces the ISS :/
-   // getIssTle().then(tle => issTle = tle)
+   getIssTle().then(tle => issTle = tle)
 }
 
 refreshIssTle()
