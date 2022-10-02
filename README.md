@@ -41,7 +41,7 @@ npm start
 
 #### HTTP APIs
 
-- [TLE API](https://tle.ivanstanojevic.me) used to obtain up-to-date two-line element sets of the ISS
+- [TLE API](https://tle.ivanstanojevic.me) by NASA, used to obtain up-to-date two-line element sets of the ISS
 
 #### Assets
 
