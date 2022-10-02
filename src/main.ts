@@ -169,14 +169,14 @@ function positionIss() {
    issBeam.lookAt(ORIGIN)
 
    const issFuturePoints: Vector3[] = []
-   for (let i = 1; i <= futureOrbit; i += 120_000) {
+   for (let i = 1; i <= futureOrbit; i += 60_000) {
       const { lat, lng } = getLatLngObj(issTle, frameTime + i)
       issFuturePoints.push(latLngToVector3(lat, lng, radius))
    }
    issFutureOrbitGeometry.setFromPoints(issFuturePoints)
 
    const issPastPoints: Vector3[] = []
-   for (let i = 1; i <= pastOrbit; i += 120_000) {
+   for (let i = 1; i <= pastOrbit; i += 60_000) {
       const { lat, lng } = getLatLngObj(issTle, frameTime - i)
       issPastPoints.push(latLngToVector3(lat, lng, radius))
    }
