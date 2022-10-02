@@ -134,7 +134,7 @@ function positionIss() {
 
    const { lat, lng } = getLatLngObj(issTle, frameTime)
    // TODO: Position at exact altitude.
-   const radius = 6_371 + ISS_AVG_ALTITUDE_KM / 2
+   const radius = 6_371 + ISS_AVG_ALTITUDE_KM
    issObject.position.copy(latLngToVector3(lat, lng, radius))
 
    // TODO: Avoid line flickering.
