@@ -30,3 +30,22 @@ npm start
 - [ ] Add credit to all resources used
 - [ ] Publish as web application (GitHub pages?)
 - [ ] Formally register to challenge and submit project
+
+
+### Credits
+
+#### JavaScript libraries
+
+- [three.js](https://github.com/mrdoob/three.js) by Ricardo Cabello et al., used as an abstraction layer over WebGL
+- [tle.js](https://github.com/davidcalhoun/tle.js) by David Calhoun, used for predicting the ISS' orbit
+
+#### HTTP APIs
+
+- [TLE API](https://tle.ivanstanojevic.me) used to obtain up-to-date two-line element sets of the ISS
+
+#### Assets
+
+- [ISS 3D model](https://solarsystem.nasa.gov/resources/2378/international-space-station-3d-model) by NASA
+- [Earth 3D model](https://solarsystem.nasa.gov/resources/2393/earth-3d-model) by NASA
+- [Sun 3D model](https://solarsystem.nasa.gov/resources/2352/sun-3d-model) by NASA
+- [Milky Way panorama](https://www.eso.org/public/images/eso0932a) by European Southern Observatory (ESO)
