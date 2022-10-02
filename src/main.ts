@@ -148,12 +148,12 @@ loadGltfModel('assets/iss.glb').then(gltf => {
 
 // TODO: Apply glowing and/or fading effect.
 const issFutureOrbitMaterial = new LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9 })
-const issFutureOrbitGeometry = new BufferGeometry()
+const issFutureOrbitGeometry = new BufferGeometry
 const issFutureOrbitLine = new Line(issFutureOrbitGeometry, issFutureOrbitMaterial)
 scene.add(issFutureOrbitLine)
 
 const issPastOrbitMaterial = new LineDashedMaterial({ color: 0xff00ff, transparent: true, opacity: 0.9, gapSize: 500, dashSize: 500 })
-const issPastOrbitGeometry = new BufferGeometry()
+const issPastOrbitGeometry = new BufferGeometry
 const issPastOrbitLine = new Line(issPastOrbitGeometry, issPastOrbitMaterial)
 scene.add(issPastOrbitLine)
 
