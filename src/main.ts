@@ -164,7 +164,6 @@ function positionIss() {
    issBeam.position.copy(latLngToVector3(lat, lng, radius - issBeamGeometry.parameters.height / 2))
    issBeam.lookAt(ORIGIN)
 
-   // TODO: Avoid line flickering.
    const issFuturePoints: Vector3[] = []
    for (let i = 1; i <= futureOrbit; i += 120_000) {
       const { lat, lng } = getLatLngObj(issTle, frameTime + i)
