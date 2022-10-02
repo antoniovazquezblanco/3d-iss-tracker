@@ -216,7 +216,7 @@ timeDisplay.style.textShadow = '0 0 5px rgb(255 255 255 / 50%)'
 
 document.body.style.margin = '0'
 document.body.style.fontFamily = 'sans-serif'
-document.body.style.backgroundImage = 'radial-gradient(#030d2b, #00060d)'
+document.body.style.backgroundImage = 'radial-gradient(#123, #000)'
 document.body.style.accentColor = '#343d46'
 document.body.append(settingsOverlay, timeDisplay, renderer.domElement)
 
