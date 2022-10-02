@@ -59,7 +59,7 @@ grid.visible = false
 scene.add(grid)
 
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, Number.MAX_SAFE_INTEGER)
-camera.position.setScalar(10_600)
+camera.position.setScalar(10_500)
 camera.lookAt(ORIGIN)
 
 // TODO...?
