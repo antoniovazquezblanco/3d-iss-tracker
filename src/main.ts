@@ -3,7 +3,9 @@ import {
    AxesHelper,
    Box3,
    BufferGeometry,
+   ConeGeometry,
    DirectionalLight,
+   DodecahedronGeometry,
    GridHelper,
    Line,
    LineBasicMaterial,
@@ -26,7 +28,6 @@ import {
    getIssTle,
    ISS_AVG_ALTITUDE_KM,
    latLngToVector3,
-   loadFbxModel,
    loadGltfModel,
    MS_IN_DAY,
    MS_IN_HOUR,
@@ -38,7 +39,7 @@ import {
 } from './utils'
 import { getLatLngObj } from 'tle.js'
 
-const renderer = new WebGLRenderer({ antialias: true, alpha: true })
+const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 const scene = new Scene()
@@ -92,7 +93,7 @@ const tempEarthSphere = new Mesh(tempEarthGeometry, tempEarthMaterial)
 scene.add(tempEarthSphere)
 
 // TODO: Verify Earth has the right inclination.
-loadGltfModel('Earth_1_12756.glb').then(gltf => {
+loadGltfModel('earth.glb').then(gltf => {
    const box = new Box3().setFromObject(gltf.scene)
    const center = box.getCenter(new Vector3)
 
@@ -111,11 +112,35 @@ let issTle = `ISS (ZARYA)
 1 25544U 98067A   22274.19759479  .00014979  00000+0  26577-3 0  9997
 2 25544  51.6446 171.3620 0002537 314.8685 180.8010 15.50443271361628`
 
-// TODO: Use better quality model.
-loadFbxModel('ISSComplete1.fbx').then(obj => {
-   obj.scale.set(200, 200, 200) // TODO: Adjust.
-   scene.add(obj)
-   issObject = obj
+const issScale = 5 // TODO: Adjust.
+
+const tempIssGeometry = new DodecahedronGeometry(25)
+const tempIssMaterial = new MeshStandardMaterial({ color: 0x111111 })
+const tempIssBox = new Mesh(tempIssGeometry, tempIssMaterial)
+tempIssBox.scale.setScalar(issScale)
+issObject = tempIssBox
+scene.add(tempIssBox)
+
+// Make the cone taller to avoid a gap between the cone and Earth as the Earth curves.
+// TODO: Adjust the cone so that its projection into the Earth's surface is ~1800km – without magic number 300.
+const issBeamGeometry = new ConeGeometry(1_800, ISS_AVG_ALTITUDE_KM + 300, 256)
+const issBeamMaterial = new MeshStandardMaterial({ color: 0x11ff11, transparent: true, opacity: 0.25 })
+const issBeam = new Mesh(issBeamGeometry, issBeamMaterial)
+issBeam.geometry.rotateX(MathUtils.degToRad(-90))
+scene.add(issBeam)
+
+loadGltfModel('iss.glb').then(gltf => {
+   const box = new Box3().setFromObject(gltf.scene)
+   const center = box.getCenter(new Vector3)
+
+   gltf.scene.position.x += gltf.scene.position.x - center.x
+   gltf.scene.position.y += gltf.scene.position.y - center.y
+   gltf.scene.position.z += gltf.scene.position.z - center.z
+   gltf.scene.scale.setScalar(issScale)
+
+   scene.remove(tempIssBox)
+   issObject = gltf.scene
+   scene.add(gltf.scene)
 })
 
 // TODO: Apply glowing and/or fading effect.
@@ -136,6 +161,8 @@ function positionIss() {
    // TODO: Position at exact altitude.
    const radius = 6_371 + ISS_AVG_ALTITUDE_KM
    issObject.position.copy(latLngToVector3(lat, lng, radius))
+   issBeam.position.copy(latLngToVector3(lat, lng, radius - issBeamGeometry.parameters.height / 2))
+   issBeam.lookAt(ORIGIN)
 
    // TODO: Avoid line flickering.
    const issFuturePoints: Vector3[] = []
