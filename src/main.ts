@@ -62,7 +62,7 @@ const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight,
 camera.position.setScalar(10_500)
 camera.lookAt(ORIGIN)
 
-// TODO?
+// TODO...?
 // const skyBoxGeometry = new SphereGeometry(Number.MAX_SAFE_INTEGER, 32, 32)
 // const skyBoxMaterial = new MeshPhongMaterial({
 //    map: new TextureLoader().load('assets/milky-way.jpeg'),
