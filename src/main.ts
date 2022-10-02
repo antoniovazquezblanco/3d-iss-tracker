@@ -59,9 +59,7 @@ grid.visible = false
 scene.add(grid)
 
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, Number.MAX_SAFE_INTEGER)
-camera.position.x = EARTH_DIAMETER_EQUATOR_KM
-camera.position.y = EARTH_DIAMETER_EQUATOR_KM
-camera.position.z = EARTH_DIAMETER_EQUATOR_KM
+camera.position.setScalar(10_500)
 camera.lookAt(ORIGIN)
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
@@ -112,7 +110,7 @@ let issTle = `ISS (ZARYA)
 1 25544U 98067A   22274.19759479  .00014979  00000+0  26577-3 0  9997
 2 25544  51.6446 171.3620 0002537 314.8685 180.8010 15.50443271361628`
 
-const issScale = 5 // TODO: Adjust.
+const issScale = 3 // TODO: Adjust.
 
 const tempIssGeometry = new DodecahedronGeometry(25)
 const tempIssMaterial = new MeshStandardMaterial({ color: 0x111111 })
@@ -161,6 +159,7 @@ function positionIss() {
    // TODO: Position at exact altitude.
    const radius = 6_371 + ISS_ALTITUDE_AVG_KM
    issObject.position.copy(latLngToVector3(lat, lng, radius))
+   issObject.lookAt(ORIGIN)
    issBeam.position.copy(latLngToVector3(lat, lng, radius - issBeamGeometry.parameters.height / 2))
    issBeam.lookAt(ORIGIN)
 
