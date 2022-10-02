@@ -21,6 +21,7 @@ import {
    WebGLRenderer
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { getLatLngObj } from 'tle.js'
 import { SettingsOverlay } from './SettingsOverlay'
 import {
    EARTH_DIAMETER_EQUATOR_KM,
@@ -37,7 +38,6 @@ import {
    ROTATION_PER_MS_DEG,
    Y_AXIS
 } from './utils'
-import { getLatLngObj } from 'tle.js'
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -61,6 +61,18 @@ scene.add(grid)
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, Number.MAX_SAFE_INTEGER)
 camera.position.setScalar(10_500)
 camera.lookAt(ORIGIN)
+
+// TODO?
+// const skyBoxGeometry = new SphereGeometry(Number.MAX_SAFE_INTEGER, 32, 32)
+// const skyBoxMaterial = new MeshPhongMaterial({
+//    map: new TextureLoader().load('assets/milky-way.jpeg'),
+//    flatShading: true,
+//    transparent: true,
+//    opacity: 0.5
+// })
+// const skyBox = new Mesh(skyBoxGeometry, skyBoxMaterial)
+// skyBox.material.side = BackSide
+// scene.add(skyBox)
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
 orbitControls.minDistance = EARTH_DIAMETER_EQUATOR_KM / 1.5
@@ -91,7 +103,7 @@ const tempEarthSphere = new Mesh(tempEarthGeometry, tempEarthMaterial)
 scene.add(tempEarthSphere)
 
 // TODO: Verify Earth has the right inclination.
-loadGltfModel('earth.glb').then(gltf => {
+loadGltfModel('assets/earth.glb').then(gltf => {
    const box = new Box3().setFromObject(gltf.scene)
    const center = box.getCenter(new Vector3)
 
@@ -127,15 +139,8 @@ const issBeam = new Mesh(issBeamGeometry, issBeamMaterial)
 issBeam.geometry.rotateX(MathUtils.degToRad(-90))
 scene.add(issBeam)
 
-loadGltfModel('iss.glb').then(gltf => {
-   const box = new Box3().setFromObject(gltf.scene)
-   const center = box.getCenter(new Vector3)
-
-   gltf.scene.position.x += gltf.scene.position.x - center.x
-   gltf.scene.position.y += gltf.scene.position.y - center.y
-   gltf.scene.position.z += gltf.scene.position.z - center.z
+loadGltfModel('assets/iss.glb').then(gltf => {
    gltf.scene.scale.setScalar(issScale)
-
    scene.remove(tempIssBox)
    issObject = gltf.scene
    scene.add(gltf.scene)

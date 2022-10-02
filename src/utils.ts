@@ -15,6 +15,9 @@ export const EARTH_DIAMETER_POLES_KM = 12_714
 export const EARTH_DIAMETER_EQUATOR_KM = 12_756
 export const ISS_ALTITUDE_AVG_KM = 420
 
+export const SUN_RADIUS_KM = 696_340
+export const EARTH_TO_SUN_KM = 149_730_000
+
 export const ROTATION_PER_MS_DEG = 360 / MS_IN_DAY
 
 export function noop() {}
@@ -56,12 +59,12 @@ const fbxLoader = new FBXLoader
 
 export function loadGltfModel(filename: string) {
    return new Promise<GLTF>((resolve, reject) =>
-      gltfLoader.load('models/' + filename, resolve, noop, reject)
+      gltfLoader.load(filename, resolve, noop, reject)
    )
 }
 
 export function loadFbxModel(filename: string) {
    return new Promise<Object3D>((resolve, reject) =>
-      fbxLoader.load('models/' + filename, resolve, noop, reject)
+      fbxLoader.load(filename, resolve, noop, reject)
    )
 }
