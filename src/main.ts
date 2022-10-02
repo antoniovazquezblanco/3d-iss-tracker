@@ -26,7 +26,7 @@ import {
    EARTH_DIAMETER_EQUATOR_KM,
    EARTH_RADIUS_AVG_KM,
    getIssTle,
-   ISS_AVG_ALTITUDE_KM,
+   ISS_ALTITUDE_AVG_KM,
    latLngToVector3,
    loadGltfModel,
    MS_IN_DAY,
@@ -123,7 +123,7 @@ scene.add(tempIssBox)
 
 // Make the cone taller to avoid a gap between the cone and Earth as the Earth curves.
 // TODO: Adjust the cone so that its projection into the Earth's surface is ~1800km – without magic number 300.
-const issBeamGeometry = new ConeGeometry(1_800, ISS_AVG_ALTITUDE_KM + 300, 256)
+const issBeamGeometry = new ConeGeometry(1_800, ISS_ALTITUDE_AVG_KM + 300, 256)
 const issBeamMaterial = new MeshStandardMaterial({ color: 0x11ff11, transparent: true, opacity: 0.25 })
 const issBeam = new Mesh(issBeamGeometry, issBeamMaterial)
 issBeam.geometry.rotateX(MathUtils.degToRad(-90))
@@ -159,7 +159,7 @@ function positionIss() {
 
    const { lat, lng } = getLatLngObj(issTle, frameTime)
    // TODO: Position at exact altitude.
-   const radius = 6_371 + ISS_AVG_ALTITUDE_KM
+   const radius = 6_371 + ISS_ALTITUDE_AVG_KM
    issObject.position.copy(latLngToVector3(lat, lng, radius))
    issBeam.position.copy(latLngToVector3(lat, lng, radius - issBeamGeometry.parameters.height / 2))
    issBeam.lookAt(ORIGIN)

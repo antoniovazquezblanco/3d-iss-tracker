@@ -13,7 +13,7 @@ export const NULL_ISLAND = new Vector3(0, 0, -Number.MAX_SAFE_INTEGER)
 export const EARTH_RADIUS_AVG_KM = 6_371
 export const EARTH_DIAMETER_POLES_KM = 12_714
 export const EARTH_DIAMETER_EQUATOR_KM = 12_756
-export const ISS_AVG_ALTITUDE_KM = 420
+export const ISS_ALTITUDE_AVG_KM = 420
 
 export const ROTATION_PER_MS_DEG = 360 / MS_IN_DAY
 
