@@ -5,6 +5,9 @@ interface SettingsOverlayProps {
    ambientLightIntensity: number
    onAmbientLightIntensityChange(v: number): void
 
+   sunLightIntensity: number
+   onSunLightIntensityChange(v: number): void
+
    timeShift: number
    onTimeShiftChange(v: number): void
 
@@ -25,6 +28,13 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    ambientLightSlider.value = '' + props.ambientLightIntensity
    ambientLightSlider.oninput = () => props.onAmbientLightIntensityChange(parseFloat(ambientLightSlider.value))
    linkWithLabel(ambientLightSlider, ambientLightSliderLabel)
+
+   const sunLightSliderLabel = Label('Sun Light')
+
+   const sunLightSlider = Slider(0, 10, 0.01)
+   sunLightSlider.value = '' + props.sunLightIntensity
+   sunLightSlider.oninput = () => props.onSunLightIntensityChange(parseFloat(sunLightSlider.value))
+   linkWithLabel(sunLightSlider, sunLightSliderLabel)
 
    const timeShiftSliderLabel = Label('Time shift')
 
@@ -51,7 +61,7 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    pastOrbitSlider.oninput = () => props.onPastOrbitChange(parseInt(pastOrbitSlider.value, 10))
    linkWithLabel(pastOrbitSlider, pastOrbitSliderLabel)
 
-   const axesVisibleLabel = Label('Axes')
+   const axesVisibleLabel = Label('Axes and Grid')
 
    const axesVisibleCheckbox = Checkbox()
    axesVisibleCheckbox.checked = props.axesVisible
@@ -74,6 +84,8 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    root.append(
       ambientLightSliderLabel,
       ambientLightSlider,
+      sunLightSliderLabel,
+      sunLightSlider,
       timeShiftSliderLabel,
       timeShiftSlider,
       futureOrbitSliderLabel,

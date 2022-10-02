@@ -46,7 +46,7 @@ const scene = new Scene()
 const ambientLight = new AmbientLight(0xFFFFFF, 0.5)
 scene.add(ambientLight)
 
-const sunLight = new DirectionalLight(0xFFCC99, 10)
+const sunLight = new DirectionalLight(0xDDBB99, 5)
 scene.add(sunLight)
 
 const axes = new AxesHelper(EARTH_DIAMETER_EQUATOR_KM)
@@ -70,7 +70,7 @@ orbitControls.maxDistance = EARTH_DIAMETER_EQUATOR_KM * 3
 let frameTime = Date.now()
 let timeShift = 0
 let futureOrbit = 1.5 * MS_IN_HOUR
-let pastOrbit = 0.5 * MS_IN_HOUR
+let pastOrbit = 1.5 * MS_IN_HOUR
 
 function positionSunLight() {
    let lastNoon = new Date().setUTCHours(12, 0, 0, 0)
@@ -164,6 +164,8 @@ setInterval(refreshIssTle, MS_IN_DAY)
 const settingsOverlay = SettingsOverlay({
    ambientLightIntensity: ambientLight.intensity,
    onAmbientLightIntensityChange: v => ambientLight.intensity = v,
+   sunLightIntensity: sunLight.intensity,
+   onSunLightIntensityChange: v => sunLight.intensity = v,
    timeShift,
    onTimeShiftChange: v => timeShift = v,
    axesVisible: axes.visible,
