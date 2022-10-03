@@ -1,4 +1,4 @@
-Solution for NASA's [Track the Space Station in 3D](https://2022.spaceappschallenge.org/challenges/2022-challenges/track-the-iss/details) challenge.
+Solution for NASA's [Track the Space Station in 3D](https://2022.spaceappschallenge.org/challenges/2022-challenges/track-the-iss/details) challenge. [**Demo**](https://inad9300.github.io/3d-iss-tracker).
 
 ### Getting started
 
