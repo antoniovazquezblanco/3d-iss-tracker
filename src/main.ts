@@ -15,8 +15,10 @@ import {
    MeshStandardMaterial,
    Object3D,
    PerspectiveCamera,
+   Raycaster,
    Scene,
    SphereGeometry,
+   Vector2,
    Vector3,
    WebGLRenderer
 } from 'three'
@@ -28,7 +30,9 @@ import {
    EARTH_RADIUS_AVG_KM,
    getIssTle,
    ISS_ALTITUDE_AVG_KM,
+   latLngFromVector3,
    latLngToVector3,
+   latLongDistanceKm,
    loadGltfModel,
    MS_IN_DAY,
    MS_IN_HOUR,
@@ -38,6 +42,8 @@ import {
    ROTATION_PER_MS_DEG,
    Y_AXIS
 } from './utils'
+
+const { degToRad } = MathUtils
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -94,7 +100,7 @@ function positionSunLight() {
 
    const { x, y, z } = NULL_ISLAND
    sunLight.position.set(x, y, z)
-   rotateAroundPoint(sunLight, ORIGIN, Y_AXIS, MathUtils.degToRad(rotationRad - 90))
+   rotateAroundPoint(sunLight, ORIGIN, Y_AXIS, degToRad(rotationRad - 90))
 }
 
 const tempEarthGeometry = new SphereGeometry(EARTH_RADIUS_AVG_KM, 32, 32)
@@ -111,16 +117,52 @@ loadGltfModel('assets/earth.glb').then(gltf => {
    gltf.scene.position.y += gltf.scene.position.y - center.y
    gltf.scene.position.z += gltf.scene.position.z - center.z
    gltf.scene.scale.setScalar(EARTH_DIAMETER_EQUATOR_KM / 1_000)
-   rotateAroundPoint(gltf.scene, ORIGIN, Y_AXIS, MathUtils.degToRad(-90))
+   rotateAroundPoint(gltf.scene, ORIGIN, Y_AXIS, degToRad(-90))
 
    scene.remove(tempEarthSphere)
    scene.add(gltf.scene)
 })
 
+renderer.domElement.addEventListener('click', ev => {
+   ev.preventDefault()
+
+   const canvas = renderer.domElement
+   const canvasRect = canvas.getBoundingClientRect()
+
+   const mousePosition = new Vector2
+   mousePosition.x = ((ev.clientX - canvasRect.left) / canvas.width) * 2 - 1
+   mousePosition.y = -((ev.clientY - canvasRect.top) / canvas.height) * 2 + 1
+
+   const rayCaster = new Raycaster
+   rayCaster.setFromCamera(mousePosition, camera)
+
+   const intersects = rayCaster.intersectObjects([tempEarthSphere])
+   if (intersects.length === 0) {
+      return
+   }
+
+   const clickLatLng = latLngFromVector3(intersects[0].point)
+
+   let time = frameTime
+   while (true) {
+      time += 60_000
+      const issLatLng = getLatLngObj(issTle, time)
+      const kmToIss = latLongDistanceKm(clickLatLng, issLatLng)
+      if (kmToIss < 100) {
+         console.log(`The ISS will be fairly close to you by ${new Date(time).toISOString()}! :D`)
+         break
+      }
+      if (time - frameTime > 30 * MS_IN_DAY) {
+         console.log(`The ISS won't be near you for the next month :(`)
+         break
+      }
+   }
+})
+
 let issObject: Object3D | undefined
-let issTle = `ISS (ZARYA)
-1 25544U 98067A   22274.19759479  .00014979  00000+0  26577-3 0  9997
-2 25544  51.6446 171.3620 0002537 314.8685 180.8010 15.50443271361628`
+let issTle = `ISS (NAUKA)
+1 49044U 21066A   22290.50488293  .00013999  00000+0  25167-3 0  9994
+2 49044  51.6427  90.5895 0003447 313.4987 150.1352 15.50128511364152`
 
 const issScale = 3 // TODO: Adjust.
 
@@ -136,7 +178,7 @@ scene.add(tempIssBox)
 const issBeamGeometry = new ConeGeometry(1_800, ISS_ALTITUDE_AVG_KM + 300, 256)
 const issBeamMaterial = new MeshStandardMaterial({ color: 0x11ff11, transparent: true, opacity: 0.25 })
 const issBeam = new Mesh(issBeamGeometry, issBeamMaterial)
-issBeam.geometry.rotateX(MathUtils.degToRad(-90))
+issBeam.geometry.rotateX(degToRad(-90))
 scene.add(issBeam)
 
 loadGltfModel('assets/iss.glb').then(gltf => {

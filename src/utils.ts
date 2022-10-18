@@ -1,6 +1,10 @@
 import { MathUtils, Object3D, Vector3 } from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { LatLngObject } from 'tle.js'
+
+const { sin, cos, acos, atan2, sqrt } = Math
+const { degToRad, radToDeg } = MathUtils
 
 export const MS_IN_HOUR = 60 * 60 * 1_000
 export const MS_IN_DAY = 24 * MS_IN_HOUR
@@ -31,14 +35,28 @@ export function rotateAroundPoint(obj: Object3D, point: Vector3, axis: Vector3, 
 
 // TODO: Adjust based on WGS 84.
 export function latLngToVector3(lat: number, lng: number, radius: number) {
-   const phi = MathUtils.degToRad(90 - lat)
-   const theta = MathUtils.degToRad(lng + 180)
+   const phi = degToRad(90 - lat)
+   const theta = degToRad(lng + 180)
    return new Vector3(
-      -radius * Math.sin(phi) * Math.cos(theta),
-      radius * Math.cos(phi),
-      radius * Math.sin(phi) * Math.sin(theta)
+      -radius * sin(phi) * cos(theta),
+      radius * cos(phi),
+      radius * sin(phi) * sin(theta)
    )
 }
+
+export function latLngFromVector3(pos: Vector3): LatLngObject {
+   const lat = 90 - radToDeg(acos(pos.y / EARTH_RADIUS_AVG_KM))
+   const lng = ((90 + radToDeg(atan2(pos.x , pos.z))) % 360) - 180
+   return { lat, lng }
+}
+
+export function latLongDistanceKm(p1: LatLngObject, p2: LatLngObject) {
+   const latDiff = degToRad(p2.lat - p1.lat)
+   const lngDiff = degToRad(p2.lng - p1.lng)
+   const a = sin(latDiff / 2) ** 2 + cos(degToRad(p1.lat)) * cos(degToRad(p2.lat)) * sin(lngDiff / 2) ** 2
+   const c = 2 * atan2(sqrt(a), sqrt(1 - a))
+   return c * EARTH_RADIUS_AVG_KM
+ }
 
 interface TleJson {
    name: string
