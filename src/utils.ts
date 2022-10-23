@@ -3,10 +3,11 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { LatLngObject } from 'tle.js'
 
-const { sin, cos, acos, atan2, sqrt } = Math
+const { sqrt, sin, cos, acos, atan2 } = Math
 const { degToRad, radToDeg } = MathUtils
 
-export const MS_IN_HOUR = 60 * 60 * 1_000
+export const MS_IN_MINUTE = 60 * 1_000
+export const MS_IN_HOUR = 60 * MS_IN_MINUTE
 export const MS_IN_DAY = 24 * MS_IN_HOUR
 
 export const ORIGIN = new Vector3(0, 0, 0)
@@ -50,13 +51,17 @@ export function latLngFromVector3(pos: Vector3): LatLngObject {
    return { lat, lng }
 }
 
-export function latLongDistanceKm(p1: LatLngObject, p2: LatLngObject) {
+export function latLngDistanceKm(p1: LatLngObject, p2: LatLngObject) {
    const latDiff = degToRad(p2.lat - p1.lat)
    const lngDiff = degToRad(p2.lng - p1.lng)
    const a = sin(latDiff / 2) ** 2 + cos(degToRad(p1.lat)) * cos(degToRad(p2.lat)) * sin(lngDiff / 2) ** 2
    const c = 2 * atan2(sqrt(a), sqrt(1 - a))
    return c * EARTH_RADIUS_AVG_KM
- }
+}
+
+export function normalize(value: number, oldMin: number, oldMax: number, newMin: number, newMax: number) {
+   return (newMax - newMin) * ((value - oldMin) / (oldMax - oldMin)) + newMin
+}
 
 interface TleJson {
    name: string

@@ -15,27 +15,27 @@ import {
    MeshStandardMaterial,
    Object3D,
    PerspectiveCamera,
-   Raycaster,
    Scene,
    SphereGeometry,
-   Vector2,
    Vector3,
    WebGLRenderer
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { getLatLngObj } from 'tle.js'
+import { h } from './dom'
+import { LocationPredictionOverlay } from './LocationPredictionOverlay'
 import { SettingsOverlay } from './SettingsOverlay'
 import {
    EARTH_DIAMETER_EQUATOR_KM,
    EARTH_RADIUS_AVG_KM,
    getIssTle,
    ISS_ALTITUDE_AVG_KM,
-   latLngFromVector3,
    latLngToVector3,
-   latLongDistanceKm,
    loadGltfModel,
    MS_IN_DAY,
    MS_IN_HOUR,
+   MS_IN_MINUTE,
+   normalize,
    NULL_ISLAND,
    ORIGIN,
    rotateAroundPoint,
@@ -69,7 +69,7 @@ camera.position.setScalar(10_500)
 camera.lookAt(ORIGIN)
 
 // TODO...?
-// const skyBoxGeometry = new SphereGeometry(Number.MAX_SAFE_INTEGER, 32, 32)
+// const skyBoxGeometry = new SphereGeometry(Number.MAX_SAFE_INTEGER / 10_000, 512, 512)
 // const skyBoxMaterial = new MeshPhongMaterial({
 //    map: new TextureLoader().load('assets/milky-way.jpeg'),
 //    flatShading: true,
@@ -81,21 +81,21 @@ camera.lookAt(ORIGIN)
 // scene.add(skyBox)
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
-orbitControls.minDistance = EARTH_DIAMETER_EQUATOR_KM / 1.5
+orbitControls.minDistance = EARTH_DIAMETER_EQUATOR_KM * 0.55
 orbitControls.maxDistance = EARTH_DIAMETER_EQUATOR_KM * 3
 
-let frameTime = Date.now()
+const frame = { time: Date.now() }
 let timeShift = 0
 let futureOrbit = 1.5 * MS_IN_HOUR
 let pastOrbit = 1.5 * MS_IN_HOUR
 
 function positionSunLight() {
    let lastNoon = new Date().setUTCHours(12, 0, 0, 0)
-   if (lastNoon > frameTime) {
+   if (lastNoon > frame.time) {
       lastNoon -= MS_IN_DAY
    }
 
-   const msFromLastNoon = frameTime - lastNoon
+   const msFromLastNoon = frame.time - lastNoon
    const rotationRad = msFromLastNoon * -ROTATION_PER_MS_DEG
 
    const { x, y, z } = NULL_ISLAND
@@ -121,42 +121,6 @@ loadGltfModel('assets/earth.glb').then(gltf => {
 
    scene.remove(tempEarthSphere)
    scene.add(gltf.scene)
-})
-
-renderer.domElement.addEventListener('click', ev => {
-   ev.preventDefault()
-
-   const canvas = renderer.domElement
-   const canvasRect = canvas.getBoundingClientRect()
-
-   const mousePosition = new Vector2
-   mousePosition.x = ((ev.clientX - canvasRect.left) / canvas.width) * 2 - 1
-   mousePosition.y = -((ev.clientY - canvasRect.top) / canvas.height) * 2 + 1
-
-   const rayCaster = new Raycaster
-   rayCaster.setFromCamera(mousePosition, camera)
-
-   const intersects = rayCaster.intersectObjects([tempEarthSphere])
-   if (intersects.length === 0) {
-      return
-   }
-
-   const clickLatLng = latLngFromVector3(intersects[0].point)
-
-   let time = frameTime
-   while (true) {
-      time += 60_000
-      const issLatLng = getLatLngObj(issTle, time)
-      const kmToIss = latLongDistanceKm(clickLatLng, issLatLng)
-      if (kmToIss < 100) {
-         console.log(`The ISS will be fairly close to you by ${new Date(time).toISOString()}! :D`)
-         break
-      }
-      if (time - frameTime > 30 * MS_IN_DAY) {
-         console.log(`The ISS won't be near you for the next month :(`)
-         break
-      }
-   }
 })
 
 let issObject: Object3D | undefined
@@ -202,7 +166,7 @@ scene.add(issPastOrbitLine)
 function positionIss() {
    if (!issObject) return
 
-   const { lat, lng } = getLatLngObj(issTle, frameTime)
+   const { lat, lng } = getLatLngObj(issTle, frame.time)
    // TODO: Position at exact altitude.
    const radius = 6_371 + ISS_ALTITUDE_AVG_KM
    issObject.position.copy(latLngToVector3(lat, lng, radius))
@@ -211,15 +175,15 @@ function positionIss() {
    issBeam.lookAt(ORIGIN)
 
    const issFuturePoints: Vector3[] = []
-   for (let i = 1; i <= futureOrbit; i += 60_000) {
-      const { lat, lng } = getLatLngObj(issTle, frameTime + i)
+   for (let i = 1; i <= futureOrbit; i += MS_IN_MINUTE) {
+      const { lat, lng } = getLatLngObj(issTle, frame.time + i)
       issFuturePoints.push(latLngToVector3(lat, lng, radius))
    }
    issFutureOrbitGeometry.setFromPoints(issFuturePoints)
 
    const issPastPoints: Vector3[] = []
-   for (let i = 1; i <= pastOrbit; i += 60_000) {
-      const { lat, lng } = getLatLngObj(issTle, frameTime - i)
+   for (let i = 1; i <= pastOrbit; i += MS_IN_MINUTE) {
+      const { lat, lng } = getLatLngObj(issTle, frame.time - i)
       issPastPoints.push(latLngToVector3(lat, lng, radius))
    }
    issPastOrbitGeometry.setFromPoints(issPastPoints)
@@ -232,6 +196,14 @@ function refreshIssTle() {
 
 refreshIssTle()
 setInterval(refreshIssTle, MS_IN_DAY)
+
+const locationPredictionOverlay = LocationPredictionOverlay({
+   canvas: renderer.domElement,
+   earth: tempEarthSphere,
+   camera,
+   frame,
+   issTle
+})
 
 const settingsOverlay = SettingsOverlay({
    ambientLightIntensity: ambientLight.intensity,
@@ -248,7 +220,7 @@ const settingsOverlay = SettingsOverlay({
    onPastOrbitChange: v => pastOrbit = v
 })
 
-const timeDisplay = document.createElement('div')
+const timeDisplay = h('div')
 timeDisplay.style.userSelect = 'none'
 timeDisplay.style.position = 'fixed'
 timeDisplay.style.bottom = timeDisplay.style.left = '8px'
@@ -257,10 +229,10 @@ timeDisplay.style.color = 'rgb(255 255 255 / 75%)'
 timeDisplay.style.textShadow = '0 0 5px rgb(255 255 255 / 50%)'
 
 document.body.style.margin = '0'
-document.body.style.fontFamily = 'sans-serif'
+document.body.style.fontFamily = 'system-ui, sans-serif'
 document.body.style.backgroundImage = 'radial-gradient(#123, #000)'
 document.body.style.accentColor = '#343d46'
-document.body.append(settingsOverlay, timeDisplay, renderer.domElement)
+document.body.append(locationPredictionOverlay, settingsOverlay, timeDisplay, renderer.domElement)
 
 window.addEventListener('resize', () => {
    const { innerWidth, innerHeight } = window
@@ -272,9 +244,9 @@ window.addEventListener('resize', () => {
 })
 
 function render() {
-   frameTime = Date.now() + timeShift
+   frame.time = Date.now() + timeShift
 
-   timeDisplay.textContent = new Date(frameTime).toISOString().slice(0, -5) + 'Z'
+   timeDisplay.textContent = new Date(frame.time).toISOString().slice(0, -5) + 'Z'
    timeDisplay.style.color = timeShift > 0
       ? 'rgb(255 100 100 / 75%)'
       : timeShift < 0
@@ -283,6 +255,13 @@ function render() {
 
    positionSunLight()
    positionIss()
+
+   const controlsDistance = orbitControls.getDistance()
+   const controlsMinDistance = orbitControls.minDistance
+   const controlsMaxDistance = orbitControls.maxDistance
+   orbitControls.rotateSpeed = normalize(controlsDistance, controlsMinDistance, controlsMaxDistance, 0.02, 1)
+   orbitControls.zoomSpeed = normalize(controlsDistance, controlsMinDistance, controlsMaxDistance, 0.25, 1)
+
    renderer.render(scene, camera)
    requestAnimationFrame(render)
 }
