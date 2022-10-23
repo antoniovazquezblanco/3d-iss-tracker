@@ -31,6 +31,10 @@ npm start
 - [ ] Publish as web application (GitHub pages?)
 - [ ] Formally register to challenge and submit project
 
+---
+
+- [ ] Generalize application to arbitrary satellites
+
 
 ### Credits
 
