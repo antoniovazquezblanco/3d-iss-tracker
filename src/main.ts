@@ -48,12 +48,13 @@ const { degToRad } = MathUtils
 const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
 
-const scene = new Scene()
+const scene = new Scene
 
+// FIXME: Lights are orange!?
 const ambientLight = new AmbientLight(0xFFFFFF, 0.5)
 scene.add(ambientLight)
 
-const sunLight = new DirectionalLight(0xDDBB99, 5)
+const sunLight = new DirectionalLight(0xFFFFFF, 5)
 scene.add(sunLight)
 
 const axes = new AxesHelper(EARTH_DIAMETER_EQUATOR_KM)
@@ -64,6 +65,7 @@ const grid = new GridHelper(20_000, 20)
 grid.visible = false
 scene.add(grid)
 
+// TODO: Adjust FoV to avoid magnifying glass effect.
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, Number.MAX_SAFE_INTEGER)
 camera.position.setScalar(10_500)
 camera.lookAt(ORIGIN)
@@ -110,17 +112,18 @@ scene.add(tempEarthSphere)
 
 // TODO: Verify Earth has the right inclination.
 loadGltfModel('assets/earth.glb').then(gltf => {
-   const box = new Box3().setFromObject(gltf.scene)
+   const model = gltf.scene
+   const box = new Box3().setFromObject(model)
    const center = box.getCenter(new Vector3)
 
-   gltf.scene.position.x += gltf.scene.position.x - center.x
-   gltf.scene.position.y += gltf.scene.position.y - center.y
-   gltf.scene.position.z += gltf.scene.position.z - center.z
-   gltf.scene.scale.setScalar(EARTH_DIAMETER_EQUATOR_KM / 1_000)
-   rotateAroundPoint(gltf.scene, ORIGIN, Y_AXIS, degToRad(-90))
+   model.position.x += model.position.x - center.x
+   model.position.y += model.position.y - center.y
+   model.position.z += model.position.z - center.z
+   model.scale.setScalar(EARTH_DIAMETER_EQUATOR_KM / 1_000)
+   rotateAroundPoint(model, ORIGIN, Y_AXIS, degToRad(-90))
 
    scene.remove(tempEarthSphere)
-   scene.add(gltf.scene)
+   scene.add(model)
 })
 
 let issObject: Object3D | undefined
@@ -146,10 +149,11 @@ issBeam.geometry.rotateX(degToRad(-90))
 scene.add(issBeam)
 
 loadGltfModel('assets/iss.glb').then(gltf => {
-   gltf.scene.scale.setScalar(issScale)
+   const model = gltf.scene
+   model.scale.setScalar(issScale)
    scene.remove(tempIssBox)
-   issObject = gltf.scene
-   scene.add(gltf.scene)
+   issObject = model
+   scene.add(model)
 })
 
 // TODO: Apply glowing and/or fading effect.

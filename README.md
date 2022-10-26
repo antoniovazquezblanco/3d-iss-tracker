@@ -34,6 +34,13 @@ npm start
 ---
 
 - [ ] Generalize application to arbitrary satellites
+- [ ] CelesTrak proxy server
+
+
+### Useful development tools
+
+- https://gltf.report
+- https://github.com/CesiumGS/gltf-pipeline
 
 
 ### Credits
