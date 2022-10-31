@@ -3,6 +3,7 @@ import {
    AxesHelper,
    Box3,
    BufferGeometry,
+   CineonToneMapping,
    ConeGeometry,
    DirectionalLight,
    DodecahedronGeometry,
@@ -47,15 +48,15 @@ const { degToRad } = MathUtils
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
 renderer.physicallyCorrectLights = true
+renderer.toneMapping = CineonToneMapping
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 const scene = new Scene
 
-// FIXME: Lights are orange!?
-const ambientLight = new AmbientLight(0xCCCCFF, 1)
+const ambientLight = new AmbientLight(0xFFFFFF, 1)
 scene.add(ambientLight)
 
-const sunLight = new DirectionalLight(0xCCCCFF, 10)
+const sunLight = new DirectionalLight(0xFFFFFF, 11)
 scene.add(sunLight)
 
 const axes = new AxesHelper(EARTH_DIAMETER_EQUATOR_KM)

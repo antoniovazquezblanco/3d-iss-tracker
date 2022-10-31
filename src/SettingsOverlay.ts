@@ -25,7 +25,7 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    const ambientLightControl = SettingSlider({
       label: 'Ambient Light',
       min: 0,
-      max: 15,
+      max: 20,
       step: 0.01,
       initialValue: props.ambientLightIntensity,
       parseValue: parseFloat,
@@ -35,7 +35,7 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    const sunLightControl = SettingSlider({
       label: 'Sun Light',
       min: 0,
-      max: 15,
+      max: 20,
       step: 0.01,
       initialValue: props.sunLightIntensity,
       parseValue: parseFloat,
