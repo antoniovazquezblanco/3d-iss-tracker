@@ -49,6 +49,7 @@ const { degToRad } = MathUtils
 const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
 renderer.physicallyCorrectLights = true
 renderer.toneMapping = CineonToneMapping
+renderer.setPixelRatio(window.devicePixelRatio)
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 const scene = new Scene
