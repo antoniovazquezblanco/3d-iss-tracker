@@ -46,15 +46,16 @@ import {
 const { degToRad } = MathUtils
 
 const renderer = new WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true })
+renderer.physicallyCorrectLights = true
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 const scene = new Scene
 
 // FIXME: Lights are orange!?
-const ambientLight = new AmbientLight(0xFFFFFF, 0.5)
+const ambientLight = new AmbientLight(0xFFFFFF, 1)
 scene.add(ambientLight)
 
-const sunLight = new DirectionalLight(0xFFFFFF, 5)
+const sunLight = new DirectionalLight(0xFFFFFF, 8)
 scene.add(sunLight)
 
 const axes = new AxesHelper(EARTH_DIAMETER_EQUATOR_KM)
@@ -148,7 +149,7 @@ const issBeam = new Mesh(issBeamGeometry, issBeamMaterial)
 issBeam.geometry.rotateX(degToRad(-90))
 scene.add(issBeam)
 
-loadGltfModel('assets/iss.glb').then(gltf => {
+loadGltfModel('assets/iss-lossy.glb').then(gltf => {
    const model = gltf.scene
    model.scale.setScalar(issScale)
    scene.remove(tempIssBox)
