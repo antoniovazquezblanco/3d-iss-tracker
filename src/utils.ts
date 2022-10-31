@@ -27,6 +27,10 @@ export const ROTATION_PER_MS_DEG = 360 / MS_IN_DAY
 
 export function noop() {}
 
+export function toInt(s: string): number {
+   return parseInt(s, 10)
+}
+
 export function rotateAroundPoint(obj: Object3D, point: Vector3, axis: Vector3, rotationRad: number) {
    obj.position.sub(point)
    obj.position.applyAxisAngle(axis, rotationRad)

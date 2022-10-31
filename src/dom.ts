@@ -40,3 +40,9 @@ export function HBox(gap = 0) {
    box.style.gap = gap + 'px'
    return box
 }
+
+export function FlexSpring() {
+   const root = h('div')
+   root.style.flex = '1'
+   return root
+}

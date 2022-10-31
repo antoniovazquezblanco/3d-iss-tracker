@@ -1,5 +1,5 @@
-import { Checkbox, HBox, Label, linkWithLabel, Slider, VBox } from './dom'
-import { MS_IN_DAY, MS_IN_HOUR } from './utils'
+import { Checkbox, h, HBox, Label, linkWithLabel, Slider, FlexSpring, VBox } from './dom'
+import { MS_IN_DAY, MS_IN_HOUR, toInt } from './utils'
 
 interface SettingsOverlayProps {
    ambientLightIntensity: number
@@ -22,44 +22,55 @@ interface SettingsOverlayProps {
 }
 
 export function SettingsOverlay(props: SettingsOverlayProps) {
-   const ambientLightSliderLabel = Label('Ambient Light')
+   const ambientLightControl = SettingSlider({
+      label: 'Ambient Light',
+      min: 0,
+      max: 15,
+      step: 0.01,
+      initialValue: props.ambientLightIntensity,
+      parseValue: parseFloat,
+      onValueChange: props.onAmbientLightIntensityChange
+   })
 
-   const ambientLightSlider = Slider(0, 5, 0.01)
-   ambientLightSlider.value = '' + props.ambientLightIntensity
-   ambientLightSlider.oninput = () => props.onAmbientLightIntensityChange(parseFloat(ambientLightSlider.value))
-   linkWithLabel(ambientLightSlider, ambientLightSliderLabel)
+   const sunLightControl = SettingSlider({
+      label: 'Sun Light',
+      min: 0,
+      max: 15,
+      step: 0.01,
+      initialValue: props.sunLightIntensity,
+      parseValue: parseFloat,
+      onValueChange: props.onSunLightIntensityChange
+   })
 
-   const sunLightSliderLabel = Label('Sun Light')
+   const timeShiftControl = SettingSlider({
+      label: 'Time Shift',
+      min: -12 * MS_IN_HOUR,
+      max: 12 * MS_IN_HOUR,
+      step: 1,
+      initialValue: props.timeShift,
+      parseValue: toInt,
+      onValueChange: props.onTimeShiftChange
+   })
 
-   const sunLightSlider = Slider(0, 10, 0.01)
-   sunLightSlider.value = '' + props.sunLightIntensity
-   sunLightSlider.oninput = () => props.onSunLightIntensityChange(parseFloat(sunLightSlider.value))
-   linkWithLabel(sunLightSlider, sunLightSliderLabel)
+   const futureOrbitControl = SettingSlider({
+      label: 'Future Orbit',
+      min: 0,
+      max: MS_IN_DAY,
+      step: 1,
+      initialValue: props.futureOrbit,
+      parseValue: toInt,
+      onValueChange: props.onFutureOrbitChange
+   })
 
-   const timeShiftSliderLabel = Label('Time shift')
-
-   const timeShiftSlider = Slider(-12 * MS_IN_HOUR, 12 * MS_IN_HOUR, 1)
-   timeShiftSlider.value = '' + props.timeShift
-   timeShiftSlider.oninput = () => props.onTimeShiftChange(parseInt(timeShiftSlider.value, 10))
-   timeShiftSlider.ondblclick = timeShiftSliderLabel.ondblclick = () => {
-      timeShiftSlider.value = '0'
-      props.onTimeShiftChange(0)
-   }
-   linkWithLabel(timeShiftSlider, timeShiftSliderLabel)
-
-   const futureOrbitSliderLabel = Label('Future Orbit')
-
-   const futureOrbitSlider = Slider(0, MS_IN_DAY, 1)
-   futureOrbitSlider.value = '' + props.futureOrbit
-   futureOrbitSlider.oninput = () => props.onFutureOrbitChange(parseInt(futureOrbitSlider.value, 10))
-   linkWithLabel(futureOrbitSlider, futureOrbitSliderLabel)
-
-   const pastOrbitSliderLabel = Label('Past Orbit')
-
-   const pastOrbitSlider = Slider(0, MS_IN_DAY, 1)
-   pastOrbitSlider.value = '' + props.pastOrbit
-   pastOrbitSlider.oninput = () => props.onPastOrbitChange(parseInt(pastOrbitSlider.value, 10))
-   linkWithLabel(pastOrbitSlider, pastOrbitSliderLabel)
+   const pastOrbitControl = SettingSlider({
+      label: 'Past Orbit',
+      min: 0,
+      max: MS_IN_DAY,
+      step: 1,
+      initialValue: props.pastOrbit,
+      parseValue: toInt,
+      onValueChange: props.onPastOrbitChange
+   })
 
    const axesVisibleLabel = Label('Axes and Grid')
 
@@ -82,18 +93,52 @@ export function SettingsOverlay(props: SettingsOverlayProps) {
    root.style.backgroundColor = 'rgb(255 255 255 / 30%)'
 
    root.append(
-      ambientLightSliderLabel,
-      ambientLightSlider,
-      sunLightSliderLabel,
-      sunLightSlider,
-      timeShiftSliderLabel,
-      timeShiftSlider,
-      futureOrbitSliderLabel,
-      futureOrbitSlider,
-      pastOrbitSliderLabel,
-      pastOrbitSlider,
+      ambientLightControl,
+      sunLightControl,
+      timeShiftControl,
+      futureOrbitControl,
+      pastOrbitControl,
       axesVisibleControl
    )
+
+   return root
+}
+
+interface SettingSliderProps {
+   label: string
+   min: number
+   max: number
+   step: number
+   initialValue: number
+   parseValue: (v: string) => number
+   onValueChange: (v: number) => void
+}
+
+function SettingSlider(props: SettingSliderProps) {
+   const sliderLabel = Label(props.label)
+
+   const sliderValue = h('div')
+   sliderValue.textContent = '' + props.initialValue
+
+   const slider = Slider(props.min, props.max, props.step)
+   slider.value = '' + props.initialValue
+   slider.oninput = () => {
+      const newValue = props.parseValue(slider.value)
+      sliderValue.textContent = '' + newValue
+      props.onValueChange(newValue)
+   }
+
+   slider.ondblclick = sliderLabel.ondblclick = () => {
+      sliderValue.textContent = slider.value = '' + props.initialValue
+      props.onValueChange(props.initialValue)
+   }
+   linkWithLabel(slider, sliderLabel)
+
+   const labelBox = HBox()
+   labelBox.append(sliderLabel, FlexSpring(), sliderValue)
+
+   const root = VBox()
+   root.append(labelBox, slider)
 
    return root
 }
