@@ -143,6 +143,7 @@ scene.add(tempIssBox)
 
 // Make the cone taller to avoid a gap between the cone and Earth as the Earth curves.
 // TODO: Adjust the cone so that its projection into the Earth's surface is ~1800km – without magic number 300.
+// TODO: Improve cone–sphere intersection.
 const issBeamGeometry = new ConeGeometry(1_800, ISS_ALTITUDE_AVG_KM + 300, 256, 1, true)
 const issBeamMaterial = new MeshStandardMaterial({ color: 0x11ff11, transparent: true, opacity: 0.25 })
 const issBeam = new Mesh(issBeamGeometry, issBeamMaterial)
